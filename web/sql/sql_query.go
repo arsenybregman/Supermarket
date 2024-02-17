@@ -2,6 +2,7 @@ package sql
 
 import (
 	"database/sql"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -27,7 +28,7 @@ func CreateTables(db *sql.DB) {
 	);`)
 
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	data.Exec()
 }
