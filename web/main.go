@@ -30,8 +30,9 @@ func main() {
 	dir := http.Dir("./assets")
 	fs := http.StripPrefix("/assets", http.FileServer(dir))
 	router.PathPrefix("/assets/").Handler(fs) //static load
-
 	router.HandleFunc("/", handler.IndexHandler(storage)).Methods(http.MethodGet, http.MethodPost)
+	router.HandleFunc("/sub", handler.SubHandler(storage)).Methods(http.MethodPost)
+
 	log.Println("Server Satrt")
 	log.Fatal(http.ListenAndServe(os.Getenv("HOST"), gorillaH.LoggingHandler(os.Stdout, router)))
 

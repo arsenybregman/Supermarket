@@ -40,5 +40,20 @@ func (db *Storage) CreateForm(email, name, message string) error {
 		return err
 	}
 	_, err = data.Exec(email, name, message)
-	return err
+	if err != nil{
+		return err
+	}
+	return nil
+}
+
+func (db *Storage) CreateSub(email string) error {
+	data, err := db.db.Prepare(`INSERT INTO sub (email) VALUES(?)`)
+	if err != nil{
+		return err
+	}
+	_, err = data.Exec(email)
+	if err != nil{
+		return err
+	}
+	return nil
 }

@@ -1,9 +1,11 @@
 package handler
 
 import (
+	"Supermarket/sql"
+
 	"html/template"
 	"net/http"
-	"Supermarket/sql"
+
 )
 
 type Message struct {
@@ -14,7 +16,7 @@ type Message struct {
 
 func IndexHandler(storage *sql.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		switch r.Method{
+		switch r.Method {
 		case http.MethodGet:
 			tmpl, _ := template.ParseFiles("templates/index.html")
 			tmpl.Execute(w, "")
@@ -27,13 +29,17 @@ func IndexHandler(storage *sql.Storage) http.HandlerFunc {
 			}
 
 			storage.CreateForm(form.Email, form.Name, form.Text)
-			
+
 			http.Redirect(w, r, "/", http.StatusMovedPermanently)
 		}
-		
+
 	}
 }
 
-func SubHandler()  {
-	
+func SubHandler(storage *sql.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		storage.CreateSub(r.FormValue("email"))
+		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	}
 }
