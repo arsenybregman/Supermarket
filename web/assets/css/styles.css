@@ -1,0 +1,113 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #eceff1;
+}
+
+header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+nav {
+    display: flex;
+    justify-content: space-around;
+    width: 90%;
+}
+
+nav a {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #4caf50;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s ease-in-out;
+}
+
+nav a:hover {
+    opacity: 1;
+}
+
+main#register {
+    min-height: calc(100vh - 80px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 2rem;
+    box-sizing: border-box;
+}
+
+fieldset {
+    legend {
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        display: block;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    input[type='text'],
+    input[type='email'],
+    input[type='password'] {
+        width: 100%;
+        padding: 0.5rem;
+        border: solid 1px lightgray;
+        border-radius: 4px;
+        outline: none;
+        resize: vertical;
+        font-size: 1rem;
+    }
+
+    input[type='text']::placeholder,
+    input[type='email']::placeholder,
+    input[type='password']::placeholder {
+        color: gainsboro;
+    }
+
+    input[type='text']:-webkit-autofill,
+    input[type='email']:-webkit-autofill,
+    input[type='password']:-webkit-autofill {
+        box-shadow: 0 0 0 100px white inset !important;
+    }
+
+    button {
+        width: 100%;
+        padding: 0.5rem;
+        margin-top: 1rem;
+        border: none;
+        border-radius: 4px;
+        background-color: green;
+        color: white;
+        cursor: pointer;
+        transition: filter 0.2s ease-in-out;
+    }
+
+    button:hover {
+        filter: brightness(90%);
+    }
+
+    small.error-message {
+        margin-top: 0.2rem;
+        color: red;
+        display: none;
+    }
+}

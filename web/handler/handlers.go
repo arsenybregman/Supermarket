@@ -5,7 +5,6 @@ import (
 
 	"html/template"
 	"net/http"
-
 )
 
 type Message struct {
@@ -13,6 +12,11 @@ type Message struct {
 	Name  string
 	Text  string
 }
+
+type GoodsAnswer struct {
+	Prices []sql.Goods
+}
+
 
 func IndexHandler(storage *sql.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -41,5 +45,18 @@ func SubHandler(storage *sql.Storage) http.HandlerFunc {
 		r.ParseForm()
 		storage.CreateSub(r.FormValue("email"))
 		http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	}
+}
+
+func PricesHandler(storage *sql.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		v, err := storage.GetGoods()
+		
+		if err != nil {
+			http.Error(w, "Server error", http.StatusInternalServerError)
+			return
+		}
+		tmpl, _ := template.ParseFiles("templates/main.html")
+		tmpl.Execute(w, GoodsAnswer{Prices: v})
 	}
 }
