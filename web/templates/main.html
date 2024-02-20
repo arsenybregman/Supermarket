@@ -115,14 +115,14 @@
 <body>
     <header>
         <nav>
-            <a href="#home">Home</a>
+            <a href="/">Home</a>
             <a href="#about">About</a>
             <a href="#contact">Contact</a>
         </nav>
     </header>
     <main>
         <div class="products-grid">
-            {{ range .Prices }}
+            {{ range . }}
                
                 <div class="card">
                     <div class="card__image" style="background-image: url('https://via.placeholder.com/200x200');"></div>
@@ -133,19 +133,11 @@
                     </div>
                 </div>
             {{ else }}
-           
-            {{ end }}
-            
-            
             <div class="card">
-              <div class="card__image" style="background-image: url('https://via.placeholder.com/200x200');"></div>
-              <div class="card__details">
-                  <span class="card__name">Product Name</span>
-                  <span class="card__description">Description goes here...</span>
-                  <span class="card__price">$12.99</span>
-              </div>
-              
+                <h1>Товаров нет</h1>
             </div>
+            {{ end }}
+          
             <!-- Add more product cards here by copying and pasting above div -->
         </div>
     </main>

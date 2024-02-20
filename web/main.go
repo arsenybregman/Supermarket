@@ -28,12 +28,13 @@ func main() {
 
 	router := mux.NewRouter()
 	dir := http.Dir("./assets")
-	fs := http.StripPrefix("/assets", http.FileServer(dir))
-	router.PathPrefix("/assets/").Handler(fs) //static load
+	fs := http.StripPrefix("/assets/", http.FileServer(dir))
+	router.PathPrefix("/assets/").Handler(fs) // static load
 
 	router.HandleFunc("/", handler.IndexHandler(storage)).Methods(http.MethodGet, http.MethodPost)
 	router.HandleFunc("/sub", handler.SubHandler(storage)).Methods(http.MethodPost)
 	router.HandleFunc("/prices", handler.PricesHandler(storage)).Methods(http.MethodGet)
+	router.HandleFunc("/profile", handler.ProfileHandler(storage)).Methods(http.MethodGet)
 
 	log.Println("Server Satrt")
 	defer log.Println("Stop Server")

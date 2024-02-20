@@ -57,6 +57,13 @@ func PricesHandler(storage *sql.Storage) http.HandlerFunc {
 			return
 		}
 		tmpl, _ := template.ParseFiles("templates/main.html")
-		tmpl.Execute(w, GoodsAnswer{Prices: v})
+		tmpl.Execute(w, v)
+	}
+}
+
+func ProfileHandler(storage *sql.Storage) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		tmpl, _ := template.ParseFiles("templates/profile.html")
+		tmpl.Execute(w, "")
 	}
 }

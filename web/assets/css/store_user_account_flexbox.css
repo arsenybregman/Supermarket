@@ -1,0 +1,173 @@
+/* General Reset */
+*,
+*:after,
+*:before {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Site Variables */
+:root {
+    --brandColor: #3f3f3f;
+    --brandDarkened: #272727;
+    --greenLight: #1ec782;
+    --redLight: #ef4747;
+    --orangeLight: #feaa01;
+    --purpleLight: #ae3ec0;
+    --darkBlue: #283048;
+    --lightBlue: #cdefff;
+    --golden: #fda836;
+}
+
+/* Basic Typographic Scales */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: normal;
+}
+
+h1,
+.entry-title {
+    font-size: clamp(1.5rem, 3vw, 3rem);
+}
+
+h2 {
+    font-size: clamp(1.2rem, 2vw, 1.8rem);
+}
+
+.menu>li>a {
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+}
+
+body,
+p,
+ol,
+ul {
+    font-size: clamp(0.8rem, 1.2vw, 1rem);
+}
+
+/* Base Layout Structure */
+.site-header {
+    background-color: var(--brandColor);
+    color: white;
+    padding: 1rem;
+}
+
+.main-navigation {
+    float: right;
+}
+
+.menu,
+.menu li {
+    list-style: none;
+}
+
+.menu li {
+    float: left;
+    position: relative;
+}
+
+.menu li a {
+    display: block;
+    padding: 0.5rem 1rem;
+    color: white;
+    text-decoration: none;
+}
+
+.menu li a:hover,
+.menu li a:focus {
+    background-color: var(--brandDarkened);
+}
+
+.menu li:hover>ul,
+.menu li.focus>ul {
+    visibility: visible;
+    opacity: 1;
+}
+
+.menu li ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: var(--brandDarkened);
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.25s ease;
+    z-index: 1;
+}
+
+.menu li ul li {
+    float: none;
+}
+
+.menu li ul li a {
+    padding: 0.5rem;
+}
+
+.menu li:last-child>a {
+    border-right: none;
+}
+
+.menu li:first-child>a {
+    border-left: none;
+}
+
+.page {
+    padding: 1rem;
+}
+
+.entry-content {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.col-md-6 {
+    flex: 0 0 50%;
+    max-width: 50%;
+    padding: 1rem;
+}
+
+.copyright {
+    text-align: center;
+    padding: 1rem;
+    color: white;
+    background-color: var(--brandDarkened);
+}
+
+/* Screen Size Specific Styles */
+@media (max-width: 767.98px) {
+    .main-navigation {
+        float: none;
+    }
+
+    .menu li {
+        float: none;
+    }
+
+    .menu li ul {
+        position: static;
+        opacity: 1;
+        visibility: visible;
+        display: none;
+    }
+
+    .menu li:hover>ul,
+    .menu li.focus>ul {
+        display: block;
+    }
+
+    .menu li ul li {
+        float: none;
+    }
+
+    .menu li ul li a {
+        padding: 0.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+}
