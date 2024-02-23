@@ -3,40 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration Form</title>
-    <link rel="stylesheet" href="assets/css/styles.css">
+    <title>College Online Grocery Store - Registration</title>
+    <link rel="stylesheet" href="assets/css/reg.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="#register">Register</a>
-            <a href="#login">Login</a>
-        </nav>
-    </header>
-    <main id="register">
-        <form action="" method="post" id="registrationForm">
-            <fieldset>
-                <legend>Create Your Account</legend>
-                <input type="text" name="firstName" id="firstName" placeholder="First Name" autocomplete="off" required />
-                <label for="firstName">First Name:</label>
-                <small id="firstNameErrorMsg" class="error-message"></small>
-
-                <input type="text" name="lastName" id="lastName" placeholder="Last Name" autocomplete="off" required />
-                <label for="lastName">Last Name:</label>
-                <small id="lastNameErrorMsg" class="error-message"></small>
-
-                <input type="email" name="email" id="email" placeholder="Email Address" autocomplete="off" required />
-                <label for="email">Email:</label>
-                <small id="emailErrorMsg" class="error-message"></small>
-
-                <input type="password" name="password" id="password" placeholder="Password" autocomplete="new-password" required />
+    <div class="container">
+        <h1>Регистрация</h1>
+        <form action="/signup" method="post" id="registration-form">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" name="name" id="name" required>
+            </div>
+            <div class="form-group">
+                <label for="surname">Surname:</label>
+                <input type="text" name="surname" id="surname" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address:</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="form-group">
                 <label for="password">Password:</label>
-                <small id="passwordErrorMsg" class="error-message"></small>
-
-                <button type="submit">Submit Registration</button>
-            </fieldset>
+                <input type="password" name="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password:</label>
+                <input type="password" name="confirm-password" id="confirm-password" required>
+                <small>Passwords must match and follow college account password guidelines.</small>
+            </div>
+            <div class="form-group">
+                <button type="submit" id="register-button">Register</button>
+            </div>
         </form>
-    </main>
-    <script src="scripts.js"></script>
+        <p>Already have an account? <a href="login.php">Log in here.</a></p>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

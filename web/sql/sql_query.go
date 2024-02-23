@@ -1,8 +1,10 @@
 package sql
 
 import (
+	"Supermarket/internal"
 	"database/sql"
 	"log"
+
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -11,11 +13,12 @@ type Storage struct {
 }
 
 type Goods struct {
-	Title string
-	Price int
+	Title       string
+	Price       int
 	Description string
-	Image []byte
+	Image       []byte
 }
+
 
 type DDL []string
 
@@ -44,14 +47,14 @@ func CreateTables(db *sql.DB) {
 	);`,
 		`CREATE TABLE IF NOT EXISTS sub (
 		email TEXT PRIMARY KEY NOT NULL UNIQUE
-	);`, 
+	);`,
 		`CREATE TABLE IF NOT EXISTS users (
 		id       INTEGER PRIMARY KEY NOT NULL UNIQUE,
 		name     TEXT    NOT NULL,
 		surname  TEXT    NOT NULL,
 		email    TEXT    UNIQUE NOT NULL,
 		password TEXT    NOT NULL
-	);`, 
+	);`,
 		`CREATE TABLE IF NOT EXISTS orders (
 		order_id INTEGER PRIMARY KEY NOT NULL,
 		user_id  INTEGER REFERENCES users (id) ON DELETE CASCADE NOT NULL,
@@ -117,4 +120,16 @@ func (db *Storage) GetGoods() ([]Goods, error) {
 		}
 	}
 	return res, nil
+}
+
+func (db *Storage) CreateUser(name, surname, email, password string) error {
+	data, err := db.db.Prepare("INSERT INTO users (name, surname, email, password) VALUES(?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	_, err1 := data.Exec(name, surname, email, internal.Hash([]byte(password)))
+	if err1 != nil {
+		return err1
+	}
+	return nil
 }
