@@ -19,6 +19,20 @@ type Goods struct {
 	Image       []byte
 }
 
+type User struct {
+	Name         string `validate:"required"`
+	Surname      string `validate:"required"`
+	Email string `validate:"email,required"`
+	Password     string `validate:"required,min=8,eqfield=ConfPassword"`
+	ConfPassword string `validate:"required,min=8"`
+}
+
+
+type UserLogin struct {
+	Email string `validate:"email,required"`
+	Password   string `validate:"required,min=8"`
+}
+
 
 type DDL []string
 
@@ -122,14 +136,23 @@ func (db *Storage) GetGoods() ([]Goods, error) {
 	return res, nil
 }
 
-func (db *Storage) CreateUser(name, surname, email, password string) error {
+func (db *Storage) CreateUser(u User) error {
 	data, err := db.db.Prepare("INSERT INTO users (name, surname, email, password) VALUES(?, ?, ?, ?)")
 	if err != nil {
 		return err
 	}
-	_, err1 := data.Exec(name, surname, email, internal.Hash([]byte(password)))
+	_, err1 := data.Exec(u.Name, u.Surname, u.Email, internal.Hash([]byte(u.Password)))
 	if err1 != nil {
 		return err1
 	}
 	return nil
+}
+
+func (db *Storage) CheckAuthUser(u UserLogin) (bool, error) {
+
+	err := db.db.QueryRow("SELECT id FROM users WHERE email=? AND password=?", u.Email, internal.Hash([]byte(u.Password))).Err()
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }

@@ -2,12 +2,12 @@ package handler
 
 import (
 	"Supermarket/sql"
-	"fmt"
 
 	"html/template"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/gorilla/sessions"
 )
 
 type Message struct {
@@ -18,14 +18,6 @@ type Message struct {
 
 type GoodsAnswer struct {
 	Prices []sql.Goods
-}
-
-type User struct {
-	Name         string `validate:"required"`
-	Surname      string `validate:"required"`
-	Email string `validate:"email,required"`
-	Password     string `validate:"required,min=8,eqfield=ConfPassword"`
-	ConfPassword string `validate:"required,min=8"`
 }
 
 // main page
@@ -81,7 +73,7 @@ func ProfileHandler(storage *sql.Storage) http.HandlerFunc {
 	}
 }
 
-func SignUpHandler(storage *sql.Storage) http.HandlerFunc {
+func SignUpHandler(storage *sql.Storage, sessionsStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
@@ -89,20 +81,71 @@ func SignUpHandler(storage *sql.Storage) http.HandlerFunc {
 		case http.MethodPost:
 			r.ParseForm()
 			validate := validator.New()
-			user := User{
-				Name:     r.FormValue("name"),
-				Surname:  r.FormValue("surname"),
-				Email: r.FormValue("email"),
-				Password: r.FormValue("password"),
+			user := sql.User{
+				Name:         r.FormValue("name"),
+				Surname:      r.FormValue("surname"),
+				Email:        r.FormValue("email"),
+				Password:     r.FormValue("password"),
 				ConfPassword: r.FormValue("confirm-password"),
 			}
-			fmt.Println(user)
 			err := validate.Struct(&user)
 			if err != nil {
-				http.NotFound(w, r)
+				http.Error(w, "Failed to create user.", http.StatusBadRequest)
 				return
 			}
-			storage.CreateUser(user.Name, user.Surname, user.Email, user.Password)
+
+			err = storage.CreateUser(user)
+			if err != nil {
+				http.Error(w, "Failed to create user.", http.StatusBadRequest)
+				return
+			}
+
+			var session, _ = sessionsStore.Get(r, "auth")
+			session.Values["check"] = true
+			session.Options.MaxAge = 86400 * 7 // sec
+			err = session.Save(r, w)
+			if err != nil {
+				http.Error(w, "Server error", http.StatusInternalServerError)
+				return
+			}
+
+			http.Redirect(w, r, "/profile", http.StatusFound)
+		default:
+			http.Error(w, "Bad request", http.StatusBadRequest)
+		}
+	}
+}
+
+func SignInHandler(storage *sql.Storage, sessionsStore *sessions.CookieStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			http.ServeFile(w, r, "templates/login.html")
+		case http.MethodPost:
+			r.ParseForm()
+			validate := validator.New()
+			user := sql.UserLogin{
+				Email:    r.FormValue("email"),
+				Password: r.FormValue("password"),
+			}
+			err := validate.Struct(&user)
+			if err != nil {
+				http.ServeFile(w, r, "templates/login.html")
+			}
+			check, _ := storage.CheckAuthUser(user)
+			if !check {
+				http.Error(w, "Failed to find user.", http.StatusBadRequest)
+				return
+			}
+			var session, _ = sessionsStore.Get(r, "auth")
+			session.Values["check"] = true
+			session.Options.MaxAge = 86400 * 7 // sec
+			err = session.Save(r, w)
+			if err != nil {
+				http.Error(w, "Server error", http.StatusInternalServerError)
+				return
+			}
+
 			http.Redirect(w, r, "/profile", http.StatusFound)
 		}
 	}
