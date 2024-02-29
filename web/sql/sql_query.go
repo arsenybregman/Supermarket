@@ -8,31 +8,32 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// DB struct
 type Storage struct {
 	db *sql.DB
 }
 
 type Goods struct {
-	Title       string
-	Price       int
-	Description string
-	Image       []byte
+	Id          int    `json:"id"`
+	Title       string `json:"title"`
+	Price       int    `json:"price"`
+	Description string `json:"description"`
+	Quantity    int    `json:"quantity"`
+	Image       []byte `json:"image"`
 }
 
 type User struct {
 	Name         string `validate:"required"`
 	Surname      string `validate:"required"`
-	Email string `validate:"email,required"`
+	Email        string `validate:"email,required"`
 	Password     string `validate:"required,min=8,eqfield=ConfPassword"`
 	ConfPassword string `validate:"required,min=8"`
 }
 
-
 type UserLogin struct {
-	Email string `validate:"email,required"`
-	Password   string `validate:"required,min=8"`
+	Email    string `validate:"email,required"`
+	Password string `validate:"required,min=8"`
 }
-
 
 type DDL []string
 
@@ -57,6 +58,7 @@ func CreateTables(db *sql.DB) {
 		title       TEXT    NOT NULL UNIQUE,
 		price       NUMERIC NOT NULL,
 		description TEXT    NOT NULL,
+		quantity    INTEGER,
 		image       BLOB
 	);`,
 		`CREATE TABLE IF NOT EXISTS sub (
@@ -149,8 +151,8 @@ func (db *Storage) CreateUser(u User) error {
 }
 
 func (db *Storage) CheckAuthUser(u UserLogin) (bool, error) {
-
-	err := db.db.QueryRow("SELECT id FROM users WHERE email=? AND password=?", u.Email, internal.Hash([]byte(u.Password))).Err()
+	var id int
+	err := db.db.QueryRow("SELECT id FROM users WHERE email=? AND password=?", u.Email, internal.Hash([]byte(u.Password))).Scan(&id)
 	if err != nil {
 		return false, err
 	}

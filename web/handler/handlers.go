@@ -20,6 +20,7 @@ type GoodsAnswer struct {
 	Prices []sql.Goods
 }
 
+
 // main page
 func IndexHandler(storage *sql.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -68,7 +69,7 @@ func PricesHandler(storage *sql.Storage) http.HandlerFunc {
 // profile
 func ProfileHandler(storage *sql.Storage) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl, _ := template.ParseFiles("templates/profile.html")
+		tmpl, _ := template.ParseFiles("templates/profile2.html")
 		tmpl.Execute(w, "")
 	}
 }
@@ -120,7 +121,8 @@ func SignInHandler(storage *sql.Storage, sessionsStore *sessions.CookieStore) ht
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			http.ServeFile(w, r, "templates/login.html")
+			tmpl, _ := template.ParseFiles("templates/login.html")
+			tmpl.Execute(w, "")
 		case http.MethodPost:
 			r.ParseForm()
 			validate := validator.New()
@@ -130,11 +132,14 @@ func SignInHandler(storage *sql.Storage, sessionsStore *sessions.CookieStore) ht
 			}
 			err := validate.Struct(&user)
 			if err != nil {
-				http.ServeFile(w, r, "templates/login.html")
+				tmpl, _ := template.ParseFiles("templates/login.html")
+				tmpl.Execute(w, "")
+				return
 			}
 			check, _ := storage.CheckAuthUser(user)
 			if !check {
-				http.Error(w, "Failed to find user.", http.StatusBadRequest)
+				tmpl, _ := template.ParseFiles("templates/login.html")
+				tmpl.Execute(w, "Данного пользователя не существует")
 				return
 			}
 			var session, _ = sessionsStore.Get(r, "auth")
