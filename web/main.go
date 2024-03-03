@@ -12,8 +12,8 @@ import (
 
 	gorillaH "github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 	"github.com/gorilla/sessions"
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -28,21 +28,30 @@ func main() {
 	}
 	var store = sessions.NewCookieStore([]byte(os.Getenv("SECRET")))
 
-	router := mux.NewRouter()
+	var service = handler.Service{
+		Storage:     storage,
+		CookieStore: store,
+	}
+
+	router := mux.NewRouter().StrictSlash(true)
 	dir := http.Dir("./assets")
 	fs := http.StripPrefix("/assets/", http.FileServer(dir))
 	router.PathPrefix("/assets/").Handler(fs) // static load
 
-	authWare := ware.CheckAuth(storage, store) // middleware for auth check
+	authWare := ware.CheckAuth(service.Storage, service.CookieStore) // middleware for auth check
 
-	router.HandleFunc("/", handler.IndexHandler(storage)).Methods(http.MethodGet, http.MethodPost)
-	router.HandleFunc("/sub", handler.SubHandler(storage)).Methods(http.MethodPost)
-	router.HandleFunc("/prices", handler.PricesHandler(storage)).Methods(http.MethodGet)
-	router.Handle("/profile", authWare(handler.ProfileHandler(storage))).Methods(http.MethodGet)
-	
+	router.HandleFunc("/", service.IndexHandler()).Methods(http.MethodGet, http.MethodPost)
+	router.HandleFunc("/sub", service.SubHandler()).Methods(http.MethodPost)
+	router.Handle("/prices", authWare(service.PricesHandler())).Methods(http.MethodGet)
+	router.Handle("/prices/{id}", authWare(service.GoodHandler())).Methods(http.MethodGet)
+	router.Handle("/profile", authWare(service.ProfileHandler())).Methods(http.MethodGet)
+	//router.Handle("/cart", authWare(service.CartHandler()))
+
 	auth := router.PathPrefix("/auth/").Subrouter()
-	auth.HandleFunc("/signup", handler.SignUpHandler(storage, store)).Methods(http.MethodPost, http.MethodGet)
-	auth.HandleFunc("/signin", handler.SignInHandler(storage, store)).Methods(http.MethodPost, http.MethodGet)
+	auth.HandleFunc("/signup", service.SignUpHandler()).Methods(http.MethodPost, http.MethodGet)
+	auth.HandleFunc("/signin", service.SignInHandler()).Methods(http.MethodPost, http.MethodGet)
+
+	//api := router.PathPrefix("/api/").Subrouter()
 
 	log.Println("Server Satrt on " + os.Getenv("HOST"))
 	defer log.Println("Stop Server")

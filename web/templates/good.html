@@ -4,21 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Page</title>
-    <link rel="stylesheet" href="good.css">
+    <link rel="stylesheet" href="/assets/css/good.css">
 </head>
 <body>
+    {{ if . }}
     <div class="container">
         <div class="product-image">
             <img src="image.jpg" alt="Product Image">
         </div>
         <div class="product-info">
-            <h2>Product Name</h2>
-            <p>Product Description</p>
-            <span class="price">Price: $XX.XX</span>
+            <h2>{{ .Title }}</h2>
+            <p>{{ .Description }}</p>
+            <span class="price">Price: {{ .Price }}</span>
             <form action="/cart" method="post">
                 <button type="submit">Add to Cart</button>
             </form>
         </div>
     </div>
+    {{ end }}
 </body>
 </html>

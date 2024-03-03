@@ -121,7 +121,7 @@ func (db *Storage) CreateSub(email string) error {
 
 func (db *Storage) GetGoods() ([]Goods, error) {
 	var res []Goods
-	rows, err := db.db.Query("SELECT title, price, description, image FROM products")
+	rows, err := db.db.Query("SELECT id, title, price, description, image FROM products")
 	if err != nil {
 		return nil, err
 	}
@@ -130,12 +130,22 @@ func (db *Storage) GetGoods() ([]Goods, error) {
 	// Обрабатываем каждую запись
 	for rows.Next() {
 		good := Goods{}
-		err := rows.Scan(&good.Title, &good.Price, &good.Description, &good.Image)
+		err := rows.Scan(&good.Id, &good.Title, &good.Price, &good.Description, &good.Image)
 		if err == nil {
 			res = append(res, good)
 		}
 	}
 	return res, nil
+}
+
+func (db *Storage) GetGood(id string) (Goods, error) {
+	var good Goods
+	row := db.db.QueryRow("SELECT title, price, description, image, quantity FROM products WHERE id=?", id)
+	err := row.Scan(&good.Title, &good.Price, &good.Description, &good.Image, &good.Quantity)
+	if err != nil {
+		return good, err
+	}
+	return good, nil
 }
 
 func (db *Storage) CreateUser(u User) error {

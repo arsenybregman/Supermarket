@@ -23,7 +23,7 @@
                 <input type="email" name="email" id="email" required>
             </div>
             <div class="form-group">
-                <label for="password">Password:</label>
+                <label for="password">Password (мин 8 символов):</label>
                 <input type="password" name="password" id="password" required>
             </div>
             <div class="form-group">
@@ -34,6 +34,9 @@
             <div class="form-group">
                 <button type="submit" id="register-button">Register</button>
             </div>
+            {{ if .}}
+                {{ . }}
+            {{ end }}
         </form>
         <p>Already have an account? <a href="/auth/signin">Log in here.</a></p>
     </div>
