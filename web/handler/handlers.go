@@ -60,14 +60,7 @@ func (s Service) SubHandler() http.HandlerFunc {
 // show all prices
 func (s Service) PricesHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		v, err := s.Storage.GetGoods()
-
-		if err != nil {
-			http.Error(w, "Server error", http.StatusInternalServerError)
-			return
-		}
-		tmpl, _ := template.ParseFiles("templates/main.html")
-		tmpl.Execute(w, v)
+		http.ServeFile(w, r, "templates/main.html")
 	}
 }
 
@@ -105,7 +98,7 @@ func (s Service) SignUpHandler() http.HandlerFunc {
 			err = s.Storage.CreateUser(user)
 			if err != nil {
 				tmpl, _ := template.ParseFiles("templates/reg.html")
-				tmpl.Execute(w, "Данного пользователя не существует")
+				tmpl.Execute(w, "Данный пользователь существует")
 				return
 			}
 
@@ -163,7 +156,7 @@ func (s Service) SignInHandler() http.HandlerFunc {
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
-			
+
 		}
 	}
 }

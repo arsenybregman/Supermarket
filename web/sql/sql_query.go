@@ -14,12 +14,11 @@ type Storage struct {
 }
 
 type Goods struct {
-	Id          int    `json:"id"`
-	Title       string `json:"title"`
-	Price       int    `json:"price"`
-	Description string `json:"description"`
-	Quantity    int    `json:"quantity"`
-	Image       []byte `json:"image"`
+	Id          int         `json:"id"`
+	Title       string      `json:"title"`
+	Price       float64     `json:"price"`
+	Description string      `json:"description"`
+	Quantity    interface{} `json:"quantity"`
 }
 
 type User struct {
@@ -54,12 +53,11 @@ func CreateTables(db *sql.DB) {
 		message TEXT NOT NULL
 	);`,
 		`CREATE TABLE IF NOT EXISTS products (
-		id          INTEGER PRIMARY KEY UNIQUE NOT NULL,
-		title       TEXT    NOT NULL UNIQUE,
-		price       NUMERIC NOT NULL,
-		description TEXT    NOT NULL,
-		quantity    INTEGER,
-		image       BLOB
+			id          INTEGER PRIMARY KEY UNIQUE NOT NULL,
+			title       TEXT    NOT NULL UNIQUE,
+			price       NUMERIC NOT NULL,
+			description TEXT    NOT NULL,
+			quantity    INTEGER
 	);`,
 		`CREATE TABLE IF NOT EXISTS sub (
 		email TEXT PRIMARY KEY NOT NULL UNIQUE
@@ -121,7 +119,7 @@ func (db *Storage) CreateSub(email string) error {
 
 func (db *Storage) GetGoods() ([]Goods, error) {
 	var res []Goods
-	rows, err := db.db.Query("SELECT id, title, price, description, image FROM products")
+	rows, err := db.db.Query("SELECT id, title, price, description, quantity FROM products")
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +128,7 @@ func (db *Storage) GetGoods() ([]Goods, error) {
 	// Обрабатываем каждую запись
 	for rows.Next() {
 		good := Goods{}
-		err := rows.Scan(&good.Id, &good.Title, &good.Price, &good.Description, &good.Image)
+		err := rows.Scan(&good.Id, &good.Title, &good.Price, &good.Description, &good.Quantity)
 		if err == nil {
 			res = append(res, good)
 		}
@@ -140,8 +138,8 @@ func (db *Storage) GetGoods() ([]Goods, error) {
 
 func (db *Storage) GetGood(id string) (Goods, error) {
 	var good Goods
-	row := db.db.QueryRow("SELECT title, price, description, image, quantity FROM products WHERE id=?", id)
-	err := row.Scan(&good.Title, &good.Price, &good.Description, &good.Image, &good.Quantity)
+	row := db.db.QueryRow("SELECT title, price, description, quantity FROM products WHERE id=?", id)
+	err := row.Scan(&good.Title, &good.Price, &good.Description, &good.Quantity)
 	if err != nil {
 		return good, err
 	}

@@ -15,10 +15,9 @@ func CheckAuth(storage *sql.Storage, store *sessions.CookieStore) func(next http
 			if session.Values["check"] == true {
 				next.ServeHTTP(w, req)
 				return
-			} else {
-				http.Redirect(w, req, "/auth/signup", http.StatusSeeOther)
-				return
 			}
+
+			http.Redirect(w, req, "/auth/signup", http.StatusSeeOther)
 
 		})
 	}

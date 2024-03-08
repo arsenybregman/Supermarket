@@ -45,13 +45,14 @@ func main() {
 	router.Handle("/prices", authWare(service.PricesHandler())).Methods(http.MethodGet)
 	router.Handle("/prices/{id}", authWare(service.GoodHandler())).Methods(http.MethodGet)
 	router.Handle("/profile", authWare(service.ProfileHandler())).Methods(http.MethodGet)
-	//router.Handle("/cart", authWare(service.CartHandler()))
+	router.Handle("/cart", authWare(service.CartHandler())).Methods(http.MethodGet, http.MethodPost)
 
 	auth := router.PathPrefix("/auth/").Subrouter()
 	auth.HandleFunc("/signup", service.SignUpHandler()).Methods(http.MethodPost, http.MethodGet)
 	auth.HandleFunc("/signin", service.SignInHandler()).Methods(http.MethodPost, http.MethodGet)
 
-	//api := router.PathPrefix("/api/").Subrouter()
+	api := router.PathPrefix("/api/").Subrouter()
+	api.HandleFunc("/prices", service.ApiPricesForJS()).Methods(http.MethodGet)
 
 	log.Println("Server Satrt on " + os.Getenv("HOST"))
 	defer log.Println("Stop Server")

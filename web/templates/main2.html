@@ -3,10 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>College Grocery Store</title>
-
     <style>
         * {
             margin: 0;
@@ -62,8 +59,7 @@
         }
         
         .products-grid {
-            display: flex;
-/*            adaptive for mobile*/
+            display: grid;
             grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
             grid-gap: 20px;
         }
@@ -91,27 +87,18 @@
         .card__name {
             font-weight: bold;
             font-size: 1.1em;
-            margin: 10px 0;
-
-            display: block;
-            text-align: center;
+            margin-bottom: 5px;
         }
         
         .card__description {
             color: grey;
             margin-bottom: 15px;
-
-            display: block;
-            text-align: center;
         }
         
         .card__price {
             font-weight: bold;
             font-size: 1.2em;
             margin-bottom: 10px;
-
-            display: block;
-            text-align: center;
         }
         
         .card:hover {
@@ -123,84 +110,36 @@
                 padding: 0 1rem;
             }
         }
-
-        .card{
-            display:flex;
-            flex-direction: column;
-        }
-
-        .btn{
-            text-align:center;
-            border:1px solid #4caf50;
-            border-radius:5px;
-            margin:.7em;
-            padding:.7em 1em;
-        }
-
-        .btn:hover{
-            cursor: pointer;
-            color:white;
-            background-color: #4caf50;
-            box-shadow: 1px 5px 5px #4caf50;
-        }
-
-        nav a[href="/basket.html"]{
-            
-        }
-
-        .func-count{
-            min-width:6em;
-            display:flex;
-            border-radius:.35em;
-            background-color: silver;
-            color:white;
-            font-weght: bold;
-            font-size:1.2em;
-            text-align: center;
-        }
-        .remove{
-            margin:.2em 1em;
-            margin-right:auto;
-        }
-        .remove:hover{
-            color:red;
-        }
-        .add{
-            margin:.2em 1em;
-            margin-left:auto;
-        }
-        .add:hover{
-            color:green;
-        }
     </style>
 </head>
 <body>
-    <div id = "app">
     <header>
         <nav>
-            <a href="/">Home</a>
+            <a href="/">Главная</a>
             <a href="/profile">Профиль</a>
             <a href="#contact">Contact</a>
-            <a href="/cart">Корзина: {{ sum }}</a>
         </nav>
     </header>
     <main>
-        <div class="products-grid" >
-               <div v-for = "[key, prt] in products" :key="key">
+        <div class="products-grid">
+            {{ range . }}
+                
                 <div class="card">
-                    <!-- image by reference to server by url -->
-                        <span class="card__name">{{ prt.title }}</span>
-                    <div class="card__image"><img v-bind = "{src: prt.image}"/></div>
+                    <div class="card__image" style="background-image: url('https://via.placeholder.com/200x200');"></div>
                     <div class="card__details">
-                        <span class="card__description">{{ prt.description }}</span>
-                        <span class="card__price price">{{ prt.price }} руб.</span>
+                        <span class="card__name">{{ .Title }}</span>
+                        <span class="card__description">{{ .Description }}</span>
+                        <span class="card__price">{{ .Price }}</span>
                     </div>
-                    <span @click = "addProduct" v-bind= "{ id:prt.id }" class = "btn">В корзину</span>
                 </div>
+            {{ else }}
+            <div class="card">
+                <h1>Товаров нет</h1>
             </div>
-        </div>
+            {{ end }}
+          
+            <!-- Add more product cards here by copying and pasting above div -->
         </div>
     </main>
 </body>
-<script src="/assets/js/main.js"></script>        
 </html>
