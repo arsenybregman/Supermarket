@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.8/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>College Grocery Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #eceff1;
+        }
+        
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-around;
+            width: 90%;
+        }
+        
+        nav a {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #4caf50;
+            text-decoration: none;
+            opacity: 0.6;
+            transition: opacity 0.2s ease-in-out;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+        }
+        
+        main {
+            min-height: calc(100vh - 350px); /* Subtract header height */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 2rem;
+            box-sizing: border-box;
+        }
+        
+        .products-grid {
+            display: flex;
+            flex-direction: column;
+            flex-wrap:wrap;
+            position: relative;
+            width:40em;
+            top:10em;
+
+            background-color: white;
+            width:20em;
+            border-radius: .3em;
+            padding:1em;
+/*            adaptive for mobile*/
+            grid-template-columns: repeat(auto-fit, minmax(25%, 1fr));
+            grid-gap: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+        
+        .card__image {
+            width: 100%;
+            height: 200px;
+            background-position: center;
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        
+        .card__details {
+        	display:flex;
+        	gap:.5em;
+            padding: 15px;
+        }
+        
+        .card__name {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+
+            display: block;
+            text-align: center;
+        }
+        
+        .card__description {
+            color: grey;
+            margin-bottom: 15px;
+
+            display: block;
+            text-align: center;
+        }
+        
+        .card__price {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+
+            display: block;
+            text-align: center;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        @media (max-width: 768px) {
+            main {
+                padding: 0 1rem;
+            }
+        }
+
+        .card{
+            display:flex;
+            flex-direction: column;
+        }
+
+        .btn{
+            text-align:center;
+            border:1px solid #4caf50;
+            border-radius:5px;
+            margin:.7em;
+            padding:.7em 1em;
+        }
+
+        .btn:hover{
+            color:white;
+            background-color: #4caf50;
+            box-shadow: 1px 5px 5px #4caf50;
+        }
+
+        .remove{
+			font-weight: bold;
+			margin-left:1em;
+			margin-right: .2em;
+		}
+		.remove:hover{
+            cursor: pointer;
+			color:red;
+		}
+        .add{
+            font-weight: bold;
+            margin-left:.8em;
+            margin-right: .2em;
+        }
+        .add:hover{
+            cursor: pointer;
+            color:green;
+        }
+
+        nav a[href="/order"]{
+/*                                */
+        }
+
+        .basket{
+        	position: absolute;
+        	top:2em;
+        	text-align: center;
+        	font-size: 1.8em;
+        	margin:.5em 0;
+        }
+
+        .message{
+            font-size:3em;
+            font-weight: bold;
+            text-align: center;
+            align-self: center;
+            margin: auto;
+        }
+
+        .wrapper-card{
+            margin:auto;
+        }
+
+        .submit{
+            text-align: center;
+            margin: auto;
+            padding: .3em 1em;
+            font-size: 1.5em;
+            border:1px solid greenyellow;
+            border-radius: .3em;
+            width:6em;
+        }
+        .submit:hover{
+            cursor: pointer;
+            background-color: greenyellow;
+            color:white;
+            box-shadow: 1px 3px 3px 1px greenyellow;
+        }
+        .sum{
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .count{
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id = "app">
+            
+        <header>
+            <nav>
+                <a href="index.html">Home</a>
+                <a href="profile.html">Профиль</a>
+                <a href="#contact">Contact</a>
+            </nav>
+        </header>
+
+        <main>
+        	<span class = "basket">Basket</span>
+        	<div class="products-grid">
+                <span v-if = "order.size == 0" class = "message">Товаров нет!</span>
+                    <div class = "wrapper-card" v-for = "prt in productsOrder">
+                        <div class="card">
+                            <div class="card__details" v-bind = "{id: prt.id + '-con'}">
+                                <span class="card__name">{{ prt.title }}</span>
+                                <span class="card__price price">{{ prt.price }} руб.</span>
+                                
+                                <span class = "count" :key = "order.get(prt.id)">{{ order.get(prt.id) }} -шт.</span>
+                                <span v-bind = "{id: prt.id}" @click = "removeProduct" class = "remove">-</span> 
+                            	<span v-bind = "{id : prt.id}" @click = "addProduct" class = "add">+</span>
+                            </div>
+                        </div>
+                    </div> 
+                        
+                <span v-if = "order.size != 0 " class = "sum">{{ sum }} руб.</span>
+                <span v-if = "order.size != 0" class = "submit" @click = "postOrder">Заказать</span>
+        
+            </div>
+        </main>
+
+    </div>
+</body>
+        <script src="/assets/js/basket.js"></script>
+</html>

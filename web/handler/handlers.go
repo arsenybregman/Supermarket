@@ -2,7 +2,7 @@ package handler
 
 import (
 	"Supermarket/sql"
-
+	sqlGo "database/sql"
 	"html/template"
 	"net/http"
 
@@ -67,8 +67,24 @@ func (s Service) PricesHandler() http.HandlerFunc {
 // profile
 func (s Service) ProfileHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := s.CookieStore.Get(r, "auth")
+		emailCookie, ok := session.Values["email"].(string)
+		if !ok {
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+		user, err := s.Storage.GetUser(emailCookie)
+		if err != nil {
+			if err == sqlGo.ErrNoRows {
+				http.Error(w, "Такого пользователя не существует", http.StatusInternalServerError)
+				return
+			}
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+
 		tmpl, _ := template.ParseFiles("templates/profile2.html")
-		tmpl.Execute(w, "")
+		tmpl.Execute(w, user)
 	}
 }
 
@@ -102,11 +118,7 @@ func (s Service) SignUpHandler() http.HandlerFunc {
 				return
 			}
 
-			var session, _ = s.CookieStore.Get(r, "auth")
-			session.Values["check"] = true
-			session.Values["email"] = r.FormValue("email")
-			session.Options.MaxAge = 86400 * 7 // sec
-			err = session.Save(r, w)
+			err = s.SetAuthSession(w, r)
 			if err != nil {
 				http.Error(w, "Server error", http.StatusInternalServerError)
 				return
@@ -144,11 +156,8 @@ func (s Service) SignInHandler() http.HandlerFunc {
 				tmpl.Execute(w, "Данного пользователя не существует")
 				return
 			}
-			var session, _ = s.CookieStore.Get(r, "auth")
-			session.Values["check"] = true
-			session.Values["email"] = r.FormValue("email")
-			session.Options.MaxAge = 86400 * 7 // sec
-			err = session.Save(r, w)
+			
+			err = s.SetAuthSession(w, r)
 			if err != nil {
 				http.Error(w, "Server error", http.StatusInternalServerError)
 				return
@@ -178,7 +187,8 @@ func (s Service) CartHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-
+			tmpl, _ := template.ParseFiles("templates/basket.html")
+			tmpl.Execute(w, "")
 		case http.MethodPost:
 		}
 	}

@@ -22,10 +22,11 @@ const app = new Vue({
                     this.sum = sum;
                 },
         addProduct: function(e){
-                    const id = e.target.id;
-                    let count = this.order.get(e.target.id);
-                    if(count == NaN || count== undefined)
+                    const id = Number(e.target.id);
+                    let count = this.order.get(id);
+                    if(count == NaN || count == null || count == undefined)
                         count = 0;
+                    
                     this.order.set(id, count+1);
 
                     this.sumProducts();
@@ -38,32 +39,32 @@ const app = new Vue({
                     this.saveLocalOrder();
                 },
         saveLocalOrder: function(){
-                    localStorage.order = JSON.stringify(Array.from(this.order.entries()));
+                    window.sessionStorage.order = JSON.stringify(Array.from(this.order.entries()));
                 }
         },
         created(){
-                 
-                       fetch('http://localhost:8000/api/prices', {
+                    fetch("http://localhost:8000/api/prices", {
                         method: "GET",
-                        headers: {
-                          //
-                        },
-                      })
-                        .then((response) => {
-                          response.json().then((data) => {
-                            this.products = new Map(Object.entries(data));
-                          });
-                        })
-                        .catch((err) => {
-                          console.error(err);
-                        });
-                console.log(this.products)
-                if(localStorage.order == null){
+                    })
+                    .then((response) => response.json())
+                    .then((response) => this.products = new Map(Object.entries(response)))
+                    .catch((err) => console.log(err));
+                 
+                    // let str = '{"1": { "id":1, "title":"mam", "description":"sadas", "price":1231}, "2": { "id":2, "title":"mam", "description":"sadas", "price":1231}}'
+                    // this.products = new Map(Object.entries(JSON.parse(str)))
+
+
+                    window.addEventListener("storage", function(e){
+                        console.log(event);
+                    })
+
+                    console.log(this.products);
+                if(window.sessionStorage.order == null){
                     this.order = new Map()   
                     return;
                 }
-                
-                this.order = new Map(JSON.parse(localStorage.order));
+
+                this.order = new Map(JSON.parse(window.sessionStorage.order));
                 this.sumProducts();
         }
 })

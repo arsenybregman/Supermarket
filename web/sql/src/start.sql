@@ -8,8 +8,7 @@ CREATE TABLE IF NOT EXISTS products (
 		title       TEXT    NOT NULL UNIQUE,
 		price       NUMERIC NOT NULL,
 		description TEXT    NOT NULL,
-		quantity    INTEGER,
-		image       BLOB
+		quantity    INTEGER
 	);
 CREATE TABLE IF NOT EXISTS sub (
 		email TEXT PRIMARY KEY NOT NULL UNIQUE

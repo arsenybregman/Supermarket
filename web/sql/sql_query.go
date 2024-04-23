@@ -158,6 +158,15 @@ func (db *Storage) CreateUser(u User) error {
 	return nil
 }
 
+func (db *Storage) GetUser(email  string) (User, error) {
+	var user User
+	err := db.db.QueryRow("SELECT name, surname, email FROM users WHERE email = ?", email).Scan(&user.Name, &user.Surname, &user.Email)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
 func (db *Storage) CheckAuthUser(u UserLogin) (bool, error) {
 	var id int
 	err := db.db.QueryRow("SELECT id FROM users WHERE email=? AND password=?", u.Email, internal.Hash([]byte(u.Password))).Scan(&id)

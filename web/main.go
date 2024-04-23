@@ -40,19 +40,23 @@ func main() {
 
 	authWare := ware.CheckAuth(service.Storage, service.CookieStore) // middleware for auth check
 
+	// MAIN router
 	router.HandleFunc("/", service.IndexHandler()).Methods(http.MethodGet, http.MethodPost)
 	router.HandleFunc("/sub", service.SubHandler()).Methods(http.MethodPost)
-	router.Handle("/prices", authWare(service.PricesHandler())).Methods(http.MethodGet)
-	router.Handle("/prices/{id}", authWare(service.GoodHandler())).Methods(http.MethodGet)
+	router.Handle("/goods", authWare(service.PricesHandler())).Methods(http.MethodGet)
+	router.Handle("/goods/{id}", authWare(service.GoodHandler())).Methods(http.MethodGet)
 	router.Handle("/profile", authWare(service.ProfileHandler())).Methods(http.MethodGet)
 	router.Handle("/cart", authWare(service.CartHandler())).Methods(http.MethodGet, http.MethodPost)
 
+	// AUTH router
 	auth := router.PathPrefix("/auth/").Subrouter()
 	auth.HandleFunc("/signup", service.SignUpHandler()).Methods(http.MethodPost, http.MethodGet)
 	auth.HandleFunc("/signin", service.SignInHandler()).Methods(http.MethodPost, http.MethodGet)
 
+	// API router
 	api := router.PathPrefix("/api/").Subrouter()
-	api.HandleFunc("/prices", service.ApiPricesForJS()).Methods(http.MethodGet)
+	api.Use(authWare)
+	api.HandleFunc("/prices", service.ApiPrices()).Methods(http.MethodGet)
 
 	log.Println("Server Satrt on " + os.Getenv("HOST"))
 	defer log.Println("Stop Server")
